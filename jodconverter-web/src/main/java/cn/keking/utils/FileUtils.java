@@ -70,7 +70,7 @@ public class FileUtils {
         return typeFromFileName(fileName);
     }
 
-    private FileType typeFromFileName(String fileName) {
+    public FileType typeFromFileName(String fileName) {
         String[] simText = ConfigConstants.getSimText();
         String[] media = ConfigConstants.getMedia();
         String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);

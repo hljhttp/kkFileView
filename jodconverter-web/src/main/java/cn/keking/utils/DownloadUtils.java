@@ -70,6 +70,7 @@ public class DownloadUtils {
                 FtpUtils.download(fileAttribute.getUrl(), realPath, ftpUsername, ftpPassword, ftpControlEncoding);
             } else {
                 URLConnection connection = url.openConnection();
+                connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
                 InputStream in = connection.getInputStream();
 
                 FileOutputStream os = new FileOutputStream(realPath);

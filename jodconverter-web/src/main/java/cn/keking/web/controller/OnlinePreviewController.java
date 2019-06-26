@@ -24,6 +24,10 @@ import java.net.*;
 import java.util.Arrays;
 import java.util.List;
 
+import com.logicaldoc.webservice.model.WSDocument;
+import com.logicaldoc.webservice.soap.client.SoapAuthClient;
+import com.logicaldoc.webservice.soap.client.SoapDocumentClient;
+
 /**
  * @author yudian-it
  */
@@ -52,6 +56,33 @@ public class OnlinePreviewController {
         req.setAttribute("fileKey", req.getParameter("fileKey"));
         model.addAttribute("officePreviewType", req.getParameter("officePreviewType"));
         model.addAttribute("originUrl", req.getRequestURL().toString());
+
+        String base = "http://192.168.100.15:58080/services";
+        if (!url.startsWith("http")) {
+            try
+            {
+                SoapAuthClient auth = new SoapAuthClient(base + "/Auth");
+                SoapDocumentClient documentClient = new SoapDocumentClient(base + "/Document");
+
+                String sid = auth.login("admin", "doc@admin");
+                WSDocument doc = documentClient.getDocumentByCustomId(sid, url);
+                url = "http://192.168.100.15:58080/downloadex?customId=" + url;
+                fileAttribute.setSuffix(doc.getType());
+                fileAttribute.setName(doc.getFileName().replaceAll("\\s+",""));
+                fileAttribute.setType(this.fileUtils.typeFromFileName(doc.getFileName()));
+                fileAttribute.setUrl(url);
+                fileAttribute.setDecodedUrl(url);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
         FilePreview filePreview = previewFactory.get(fileAttribute);
         return filePreview.filePreviewHandle(url, model, fileAttribute);
     }
